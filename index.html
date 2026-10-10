@@ -1,0 +1,508 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Đề Kiểm Thử Hộp Trắng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: exam-paper column; sticky bar with countdown; each problem = code with node gutter + 3 answer parts */
+:root{
+  --bg:#eef2f3; --paper:#ffffff; --ink:#18242b; --muted:#5b6b73; --line:#d5dee2;
+  --accent:#1d5a7a; --accent-soft:#e2eef4; --code-bg:#f4f7f8; --gutter:#9aaab2; --str:#8a4b14;
+  --ok:#1f7a4d; --ok-soft:#e3f3ea; --bad:#b23a3a; --bad-soft:#f8e6e6; --warn:#9a6200; --warn-soft:#fbf0dc;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11181c; --paper:#182227; --ink:#e3eaed; --muted:#93a4ac; --line:#2b3a41;
+  --accent:#7cb9d8; --accent-soft:#1d3240; --code-bg:#121a1e; --gutter:#5a6d76; --str:#e0a76c;
+  --ok:#5cc58f; --ok-soft:#173326; --bad:#ec7f7f; --bad-soft:#3a1d1f; --warn:#e6b25c; --warn-soft:#352a15; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11181c; --paper:#182227; --ink:#e3eaed; --muted:#93a4ac; --line:#2b3a41;
+  --accent:#7cb9d8; --accent-soft:#1d3240; --code-bg:#121a1e; --gutter:#5a6d76; --str:#e0a76c;
+  --ok:#5cc58f; --ok-soft:#173326; --bad:#ec7f7f; --bad-soft:#3a1d1f; --warn:#e6b25c; --warn-soft:#352a15; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);padding-inline:16px;padding-block:0 56px}
+.wrap{max-width:860px;margin:0 auto}
+header.paper-head{padding-block:30px 18px;display:grid;gap:8px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:28px;line-height:1.25;margin:0;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:14px}
+.meta b{color:var(--ink);font-weight:600}
+.mono{font-family:var(--f-mono);font-size:.92em}
+
+.start{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.start label{font-size:14px;color:var(--muted)}
+.start input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);width:240px;max-width:100%}
+.who{font-size:14px;color:var(--muted)} .who b{color:var(--ink)}
+
+.guide{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-top:14px;font-size:14px}
+.guide h2{font-size:15px;margin:0 0 6px}
+.guide ul{margin:0;padding-left:20px;display:grid;gap:3px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);margin-block:16px 20px}
+.bar-inner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.timer{font:600 20px var(--f-mono);font-variant-numeric:tabular-nums;padding:2px 10px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.timer.low{background:var(--warn-soft);color:var(--warn)}
+.timer.out{background:var(--bad-soft);color:var(--bad)}
+.progress{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress b{color:var(--ink)}
+.bar .spacer{flex:1}
+
+fieldset#fs{border:0;margin:0;padding:0;min-width:0}
+fieldset#fs:disabled .q:not(.graded){opacity:.75}
+
+.q{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px;display:grid;gap:14px;min-width:0}
+.q-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.q-num{font-weight:700;font-size:16px;color:var(--accent)}
+.q-pts{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.q h2{font-size:18px;margin:0;line-height:1.35}
+.q p{margin:0;max-width:70ch}
+
+.codewrap{overflow-x:auto;background:var(--code-bg);border:1px solid var(--line);border-radius:8px}
+pre.code{margin:0;padding:12px 14px 12px 0;font:13.5px/1.75 var(--f-mono);min-width:max-content}
+pre.code .row{display:flex}
+pre.code .nd{flex:0 0 3.4em;text-align:center;user-select:none}
+pre.code .nd span{display:inline-block;min-width:1.7em;padding:0 4px;border-radius:999px;background:var(--accent);color:var(--paper);font-size:11.5px;font-weight:600;line-height:1.6}
+pre.code .kw{color:var(--accent);font-weight:600}
+pre.code .str{color:var(--str)}
+pre.code .cm{color:var(--muted);font-style:italic}
+
+.part{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.part-h{font-weight:600;display:flex;gap:8px;align-items:baseline}
+.part-h .tag{font:600 12px var(--f-mono);color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:1px 6px}
+.part-h .w{font-weight:400;color:var(--muted);font-size:13px;margin-left:auto;font-variant-numeric:tabular-nums}
+.hint{font-size:13px;color:var(--muted)}
+input.txt,textarea,select{font:14px var(--f-mono);padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);min-width:0}
+.num-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.num-row input{width:90px;font-size:16px;font-weight:600}
+textarea{width:100%;resize:vertical;line-height:1.6}
+
+.tblwrap{overflow-x:auto}
+table.tc{border-collapse:collapse;font-size:13.5px;width:100%}
+table.tc th{font-weight:600;color:var(--muted);text-align:left;padding:4px 6px;font-size:12.5px;white-space:nowrap}
+table.tc td{padding:3px 4px}
+table.tc td.n{color:var(--muted);font-variant-numeric:tabular-nums;width:2em;text-align:center}
+table.tc input,table.tc select{width:100%;min-width:76px}
+table.tc input.arr{min-width:120px}
+.x{background:none;border:1px solid transparent;color:var(--muted);font:600 16px var(--f-body);border-radius:6px;cursor:pointer;padding:2px 8px}
+.x:hover{border-color:var(--line);color:var(--bad)}
+.add{justify-self:start;background:none;border:1px dashed var(--accent);color:var(--accent);font:600 13px var(--f-body);padding:6px 12px;border-radius:6px;cursor:pointer}
+
+button.primary,button.ghost{font:600 14.5px var(--f-body);padding:9px 18px;border-radius:8px;cursor:pointer;border:1px solid var(--accent)}
+button.primary{background:var(--accent);color:var(--paper)}
+button.ghost{background:transparent;color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.warnmsg{color:var(--bad);font-size:14px}
+
+/* feedback */
+.fb{display:grid;gap:12px;border-top:2px solid var(--accent);padding-top:14px}
+.fb-score{font-weight:700;font-size:15px}
+.fb-part{display:grid;gap:6px;font-size:14px}
+.fb-part h3{font-size:14px;margin:0;display:flex;gap:8px;align-items:baseline}
+.pill{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;font-variant-numeric:tabular-nums}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.no{background:var(--bad-soft);color:var(--bad)} .pill.mid{background:var(--warn-soft);color:var(--warn)}
+.plist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.plist li{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.mk{font-weight:700;width:1.1em} .mk.ok{color:var(--ok)} .mk.no{color:var(--bad)}
+.sub{color:var(--muted);font-size:13px}
+table.rs{border-collapse:collapse;font-size:13px;width:100%}
+table.rs th,table.rs td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
+table.rs th{color:var(--muted);font-weight:600;background:var(--code-bg)}
+table.rs td.ok{color:var(--ok);font-weight:600} table.rs td.no{color:var(--bad);font-weight:600}
+details.sol{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14px}
+details.sol summary{cursor:pointer;font-weight:600;color:var(--accent)}
+details.sol .in{display:grid;gap:8px;margin-top:10px}
+details.sol p{margin:0}
+
+.result{background:var(--paper);border:1px solid var(--accent);border-radius:10px;padding:20px;margin-bottom:20px;display:grid;gap:12px}
+.score{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.score .big{font-size:46px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;color:var(--accent)}
+.score .of{color:var(--muted);font-size:18px}
+.rank{font-weight:600;padding:3px 10px;border-radius:999px;font-size:13px}
+table.sum{border-collapse:collapse;font-size:13.5px;width:100%;font-variant-numeric:tabular-nums}
+table.sum th,table.sum td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+table.sum th:first-child,table.sum td:first-child{text-align:left}
+table.sum th{color:var(--muted);font-weight:600;font-size:12.5px}
+table.sum tr:last-child td{font-weight:700;border-bottom:0}
+@media (max-width:520px){h1{font-size:23px} .q{padding:16px} .bar .spacer{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <header class="paper-head">
+    <div class="eyebrow">Kiểm thử phần mềm · Kiểm thử hộp trắng · Kiểm thử đường cơ sở</div>
+    <h1>Đề kiểm tra: Độ phức tạp chu trình và đường độc lập</h1>
+    <div class="meta"><span><b>6</b> bài</span><span>Thang điểm <b>10</b></span><span>Thời gian <b>40 phút</b></span><span>Chấm tự động · Nộp <b>1 lần</b></span></div>
+  </header>
+
+  <div class="start" id="startBox">
+    <label for="sv">Họ tên thí sinh</label>
+    <input id="sv" type="text" placeholder="Nguyễn Văn A" autocomplete="off">
+    <button type="button" class="primary" id="startBtn">Bắt đầu làm bài · 40 phút</button>
+  </div>
+  <div class="start" id="whoBox" hidden><span class="who" id="who"></span></div>
+
+  <section class="guide">
+    <h2>Yêu cầu chung cho mỗi bài</h2>
+    <ul>
+      <li><b>a)</b> Tính độ phức tạp chu trình <span class="mono">V(G)</span>. Các nút của đồ thị luồng điều khiển đã được đánh số ở lề trái mã nguồn; điều kiện ghép (<span class="mono">&&</span>, <span class="mono">||</span>) đã được tách thành các nút riêng.</li>
+      <li><b>b)</b> Liệt kê tập đường độc lập (đường cơ sở). Mỗi dòng một đường, ghi số nút nối bằng dấu gạch ngang, ví dụ <span class="mono">1-2-4-6</span>. Mỗi đường đi từ nút đầu đến nút cuối; các đường viết theo thứ tự nào cũng được, miễn cả tập độc lập với nhau. Số đường bằng <span class="mono">V(G)</span>.</li>
+      <li><b>c)</b> Thiết kế các ca kiểm thử: nhập đầu vào và kết quả mong đợi. Bộ ca phải đi qua mọi cạnh của đồ thị, nên có ít nhất <span class="mono">V(G)</span> ca, lý tưởng là mỗi ca ứng với một đường ở phần b.</li>
+      <li>Điểm mỗi bài: a) 30% · b) 35% (theo số đường hợp lệ và độc lập) · c) 35% (một nửa cho độ phủ cạnh, một nửa cho kết quả mong đợi đúng). Hệ thống chạy thử từng ca để biết ca đó thực sự đi qua đường nào.</li>
+    </ul>
+  </section>
+
+  <div class="bar"><div class="bar-inner">
+    <span class="timer" id="timer" aria-live="off">40:00</span>
+    <span class="progress" id="progress">Đã làm đủ <b>0/6</b> bài</span>
+    <span class="spacer"></span>
+    <button type="button" class="primary" id="submitTop">Nộp bài</button>
+  </div></div>
+
+  <section class="result" id="result" hidden></section>
+
+  <form id="exam" novalidate>
+    <fieldset id="fs" disabled>
+      <div id="problems"></div>
+    </fieldset>
+    <div class="actions">
+      <button type="submit" class="primary" id="submitBtn">Nộp bài và chấm điểm</button>
+      <span class="warnmsg" id="warn" hidden></span>
+    </div>
+  </form>
+</div>
+
+<script>
+const TOTAL_MIN = 40;
+const W = {v:0.30, p:0.35, t:0.35};
+const STORE = "wbt-exam-cc-v2";
+
+const PROBLEMS = [
+{ id:1, pts:1.5, title:"Giá trị lớn nhất của ba số",
+  desc:"Hàm trả về số lớn nhất trong ba số nguyên a, b, c.",
+  code:[[null,"int max3(int a, int b, int c) {"],[1,"    int m = a;"],[2,"    if (b > m)"],[3,"        m = b;"],[4,"    if (c > m)"],[5,"        m = c;"],[6,"    return m;"],[null,"}"]],
+  entry:1, exit:6, V:3,
+  edges:[[1,2],[2,3],[2,4],[3,4],[4,5],[4,6],[5,6]],
+  inputs:[{k:"a",t:"int"},{k:"b",t:"int"},{k:"c",t:"int"}], out:{t:"num"},
+  run(x){const p=[1,2];let m=x.a;if(x.b>m){p.push(3);m=x.b;}p.push(4);if(x.c>m){p.push(5);m=x.c;}p.push(6);return{path:p,out:m};},
+  sol:{v:"Nút quyết định: 2, 4 → V(G) = 2 + 1 = 3. Kiểm tra: E = 7, N = 6 → 7 − 6 + 2 = 3.",
+       tests:[["a=5, b=3, c=1","1-2-4-6","5"],["a=1, b=5, c=2","1-2-3-4-6","5"],["a=1, b=0, c=7","1-2-4-5-6","7"]]}
+},
+{ id:2, pts:1.5, title:"Xếp loại điểm",
+  desc:"Hàm nhận điểm d (thang 10) và trả về xếp loại. Điểm ngoài khoảng [0, 10] là lỗi.",
+  code:[[null,"String xepLoai(double d) {"],[null,"    String kq;"],[1,"    if (d < 0"],[2,"        || d > 10)"],[3,"        kq = \"Lỗi\";"],[4,"    else if (d >= 8)"],[5,"        kq = \"Giỏi\";"],[6,"    else if (d >= 5)"],[7,"        kq = \"Đạt\";"],[null,"    else"],[8,"        kq = \"Kém\";"],[9,"    return kq;"],[null,"}"]],
+  entry:1, exit:9, V:5,
+  edges:[[1,2],[1,3],[2,3],[2,4],[3,9],[4,5],[4,6],[5,9],[6,7],[6,8],[7,9],[8,9]],
+  inputs:[{k:"d",t:"num"}], out:{t:"enum",opts:["Lỗi","Giỏi","Đạt","Kém"]},
+  run({d}){const p=[1];let k;if(d<0){p.push(3);k="Lỗi";}else{p.push(2);if(d>10){p.push(3);k="Lỗi";}else{p.push(4);if(d>=8){p.push(5);k="Giỏi";}else{p.push(6);if(d>=5){p.push(7);k="Đạt";}else{p.push(8);k="Kém";}}}}p.push(9);return{path:p,out:k};},
+  sol:{v:"Nút quyết định: 1, 2, 4, 6 → V(G) = 4 + 1 = 5. Kiểm tra: E = 12, N = 9 → 12 − 9 + 2 = 5.",
+       tests:[["d = -1","1-3-9","Lỗi"],["d = 11","1-2-3-9","Lỗi"],["d = 9","1-2-4-5-9","Giỏi"],["d = 6","1-2-4-6-7-9","Đạt"],["d = 3","1-2-4-6-8-9","Kém"]],
+       note:"Điều kiện ghép d < 0 || d > 10 tách thành hai nút 1 và 2, nên nhánh “Lỗi” cần hai ca riêng: một ca cho d < 0, một ca cho d > 10."}
+},
+{ id:3, pts:1.5, title:"Tính phí giao hàng",
+  desc:"Phí cơ bản 20.000đ cho 5 kg đầu, mỗi kg vượt thêm 3.000đ. Ngoại thành nhân 1,5. Khách VIP được giảm 10% nếu phí trên 50.000đ.",
+  code:[[null,"double phiShip(double kg, boolean noiThanh, boolean vip) {"],[1,"    double phi = 20000;"],[2,"    if (kg > 5)"],[3,"        phi = phi + (kg - 5) * 3000;"],[4,"    if (!noiThanh)"],[5,"        phi = phi * 1.5;"],[6,"    if (vip"],[7,"        && phi > 50000)"],[8,"        phi = phi * 0.9;"],[9,"    return phi;"],[null,"}"]],
+  entry:1, exit:9, V:5,
+  edges:[[1,2],[2,3],[2,4],[3,4],[4,5],[4,6],[5,6],[6,7],[6,9],[7,8],[7,9],[8,9]],
+  inputs:[{k:"kg",t:"num"},{k:"noiThanh",t:"bool"},{k:"vip",t:"bool"}], out:{t:"num"},
+  run(x){const p=[1,2];let phi=20000;if(x.kg>5){p.push(3);phi=phi+(x.kg-5)*3000;}p.push(4);if(!x.noiThanh){p.push(5);phi=phi*1.5;}p.push(6);if(x.vip){p.push(7);if(phi>50000){p.push(8);phi=phi*0.9;}}p.push(9);return{path:p,out:phi};},
+  sol:{v:"Nút quyết định: 2, 4, 6, 7 → V(G) = 4 + 1 = 5. Kiểm tra: E = 12, N = 9 → 12 − 9 + 2 = 5.",
+       tests:[["kg=3, noiThanh=true, vip=false","1-2-4-6-9","20000"],["kg=7, noiThanh=true, vip=false","1-2-3-4-6-9","26000"],["kg=3, noiThanh=false, vip=false","1-2-4-5-6-9","30000"],["kg=3, noiThanh=true, vip=true","1-2-4-6-7-9","20000"],["kg=20, noiThanh=false, vip=true","1-2-3-4-5-6-7-8-9","87750"]],
+       note:"Để đi được cạnh 7→8 cần phí trên 50.000đ, nên ca cuối phải kết hợp hàng nặng và ngoại thành: (20000 + 15 × 3000) × 1,5 × 0,9 = 87.750."}
+},
+{ id:4, pts:1.5, title:"Tổng các số chẵn từ 1 đến n",
+  desc:"Hàm trả về tổng các số chẵn trong đoạn [1, n].",
+  code:[[null,"int tongChan(int n) {"],[1,"    int s = 0, i = 1;"],[2,"    while (i <= n) {"],[3,"        if (i % 2 == 0)"],[4,"            s = s + i;"],[5,"        i++;"],[null,"    }"],[6,"    return s;"],[null,"}"]],
+  entry:1, exit:6, V:3,
+  edges:[[1,2],[2,3],[2,6],[3,4],[3,5],[4,5],[5,2]],
+  inputs:[{k:"n",t:"int",min:-1000,max:1000}], out:{t:"num"},
+  run({n}){const p=[1];let s=0,i=1;while(true){p.push(2);if(!(i<=n))break;p.push(3);if(i%2===0){p.push(4);s+=i;}p.push(5);i++;}p.push(6);return{path:p,out:s};},
+  sol:{v:"Nút quyết định: 2, 3 → V(G) = 2 + 1 = 3. Kiểm tra: E = 7, N = 6 → 7 − 6 + 2 = 3.",
+       tests:[["n = 0","1-2-6","0"],["n = 1","1-2-3-5-2-6","0"],["n = 2","1-2-3-5-2-3-4-5-2-6","2"]],
+       note:"Đường 1-2-3-4-5-2-6 đúng trên đồ thị nhưng không thực hiện được: i bắt đầu bằng 1 (lẻ) nên lần lặp đầu luôn đi 3→5. Vì vậy đường thứ ba phải lặp hai lần."}
+},
+{ id:5, pts:2, title:"Cộng số dương cho đến khi gặp số âm",
+  desc:"Hàm duyệt mảng a, cộng các phần tử dương và dừng ngay khi gặp phần tử âm.",
+  code:[[null,"int tongDenAm(int[] a) {"],[1,"    int s = 0, i = 0;"],[2,"    while (i < a.length) {"],[3,"        if (a[i] < 0)"],[4,"            break;"],[5,"        if (a[i] > 0)"],[6,"            s = s + a[i];"],[7,"        i++;"],[null,"    }"],[8,"    return s;"],[null,"}"]],
+  entry:1, exit:8, V:4,
+  edges:[[1,2],[2,3],[2,8],[3,4],[3,5],[4,8],[5,6],[5,7],[6,7],[7,2]],
+  inputs:[{k:"a",t:"arr"}], out:{t:"num"},
+  run({a}){const p=[1];let s=0,i=0;while(true){p.push(2);if(!(i<a.length))break;p.push(3);if(a[i]<0){p.push(4);break;}p.push(5);if(a[i]>0){p.push(6);s+=a[i];}p.push(7);i++;}p.push(8);return{path:p,out:s};},
+  sol:{v:"Nút quyết định: 2, 3, 5 → V(G) = 3 + 1 = 4. Kiểm tra: E = 10, N = 8 → 10 − 8 + 2 = 4.",
+       tests:[["a = []","1-2-8","0"],["a = [-1]","1-2-3-4-8","0"],["a = [0]","1-2-3-5-7-2-8","0"],["a = [4]","1-2-3-5-6-7-2-8","4"]],
+       note:"Lệnh break tạo cạnh 4→8 đi thẳng ra khỏi vòng lặp; cạnh này cần một ca riêng có phần tử âm."}
+},
+{ id:6, pts:2, title:"Tìm kiếm tuần tự",
+  desc:"Hàm trả về vị trí đầu tiên của x trong mảng a, hoặc -1 nếu không có.",
+  code:[[null,"int timKiem(int[] a, int x) {"],[1,"    int i = 0, vt = -1;"],[2,"    while (i < a.length"],[3,"           && vt == -1) {"],[4,"        if (a[i] == x)"],[5,"            vt = i;"],[6,"        i++;"],[null,"    }"],[7,"    return vt;"],[null,"}"]],
+  entry:1, exit:7, V:4,
+  edges:[[1,2],[2,3],[2,7],[3,4],[3,7],[4,5],[4,6],[5,6],[6,2]],
+  inputs:[{k:"a",t:"arr"},{k:"x",t:"int"}], out:{t:"num"},
+  run({a,x}){const p=[1];let i=0,vt=-1;while(true){p.push(2);if(!(i<a.length))break;p.push(3);if(vt!==-1)break;p.push(4);if(a[i]===x){p.push(5);vt=i;}p.push(6);i++;}p.push(7);return{path:p,out:vt};},
+  sol:{v:"Nút quyết định: 2, 3, 4 → V(G) = 3 + 1 = 4. Kiểm tra: E = 9, N = 7 → 9 − 7 + 2 = 4.",
+       tests:[["a = [], x = 3","1-2-7","-1"],["a = [4], x = 3","1-2-3-4-6-2-7","-1"],["a = [3], x = 3","1-2-3-4-5-6-2-7","0"],["a = [3, 8], x = 3","1-2-3-4-5-6-2-3-7","0"]],
+       note:"Đường 1-2-3-7 không thực hiện được vì lần đầu vt luôn bằng -1. Cạnh 3→7 chỉ đi được khi đã tìm thấy x mà mảng vẫn còn phần tử phía sau."}
+}];
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const fmt = x => (Math.round(x*100)/100).toLocaleString("vi-VN",{maximumFractionDigits:2});
+const dash = arr => arr.length > 40 ? arr.slice(0,40).join("-")+"-… ("+arr.length+" nút)" : arr.join("-");
+function hl(src){
+  let s = esc(src);
+  s = s.replace(/("[^"]*")/g,'<span class="str">$1</span>');
+  s = s.replace(/(\/\/.*)$/,'<span class="cm">$1</span>');
+  s = s.replace(/\b(int|double|String|boolean|if|else|while|return|break)\b/g,'<span class="kw">$1</span>');
+  return s;
+}
+function parseVal(inp, raw){
+  raw = raw.trim();
+  if (inp.t === "int"){ if(!/^-?\d+$/.test(raw)) return undefined; const n=Number(raw); if(inp.min!==undefined&&(n<inp.min||n>inp.max)) return undefined; return n; }
+  if (inp.t === "num"){ if(raw==="") return undefined; const n=Number(raw.replace(",",".")); return Number.isFinite(n)?n:undefined; }
+  if (inp.t === "bool"){ return raw==="true"?true:raw==="false"?false:undefined; }
+  if (inp.t === "arr"){ const t=raw.replace(/^\[|\]$/g,"").trim(); if(t==="") return []; const parts=t.split(/[,;\s]+/).filter(Boolean); if(parts.length>50||parts.some(x=>!/^-?\d+$/.test(x))) return undefined; return parts.map(Number); }
+}
+const showVal = v => Array.isArray(v) ? "["+v.join(", ")+"]" : String(v);
+function outEq(out, exp, actual){
+  if (out.t==="enum") return exp===actual;
+  const n = Number(String(exp).trim().replace(/\./g,"").replace(",",".")); // cho phép 87.750 hoặc 87750
+  const n2 = Number(String(exp).trim().replace(",","."));
+  return (Number.isFinite(n2) && Math.abs(n2-actual)<0.01) || (Number.isFinite(n) && Math.abs(n-actual)<0.01);
+}
+const typeHint = t => ({int:"số nguyên",num:"số",bool:"true / false",arr:"mảng, VD 3, -1, 5"}[t]);
+
+/* ---------- render ---------- */
+let rowSeq = 0;
+function cellFor(p, inp, rid, val=""){
+  const id = `t${p.id}_${rid}_${inp.k}`;
+  if (inp.t==="bool") return `<select id="${id}" data-k="${inp.k}" aria-label="${inp.k}"><option value=""></option><option${val==="true"?" selected":""}>true</option><option${val==="false"?" selected":""}>false</option></select>`;
+  return `<input class="txt${inp.t==="arr"?" arr":""}" id="${id}" data-k="${inp.k}" aria-label="${inp.k}" type="text" autocomplete="off" value="${esc(val).replace(/"/g,"&quot;")}" placeholder="${inp.t==="arr"?"3, -1, 5":""}">`;
+}
+function outCell(p, rid, val=""){
+  const id = `t${p.id}_${rid}_exp`;
+  if (p.out.t==="enum") return `<select id="${id}" data-k="__exp" aria-label="Kết quả mong đợi"><option value=""></option>${p.out.opts.map(o=>`<option${o===val?" selected":""}>${o}</option>`).join("")}</select>`;
+  return `<input class="txt" id="${id}" data-k="__exp" aria-label="Kết quả mong đợi" type="text" autocomplete="off" value="${esc(val).replace(/"/g,"&quot;")}">`;
+}
+function addRow(p, data){
+  const tb = $(`tb${p.id}`); const rid = ++rowSeq;
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td class="n"></td>${p.inputs.map(i=>`<td>${cellFor(p,i,rid,data?.inputs?.[i.k]??"")}</td>`).join("")}<td>${outCell(p,rid,data?.exp??"")}</td><td><button type="button" class="x" aria-label="Xoá ca này">×</button></td>`;
+  tr.querySelector(".x").onclick = () => { tr.remove(); renumber(p); save(); updateProgress(); };
+  tb.appendChild(tr); renumber(p);
+}
+function renumber(p){ [...$(`tb${p.id}`).rows].forEach((r,i)=> r.cells[0].textContent = i+1); }
+
+function renderProblems(){
+  $("problems").innerHTML = PROBLEMS.map(p=>`
+  <article class="q" id="p${p.id}">
+    <div class="q-head"><span class="q-num">Bài ${p.id}</span><span class="q-pts">${fmt(p.pts)} điểm</span></div>
+    <h2>${p.title}</h2>
+    <p>${p.desc}</p>
+    <div class="codewrap"><pre class="code">${p.code.map(([n,c])=>`<div class="row"><span class="nd">${n?`<span>${n}</span>`:""}</span><span>${hl(c)}</span></div>`).join("")}</pre></div>
+    <div class="part">
+      <div class="part-h"><span class="tag">a</span>Độ phức tạp chu trình<span class="w">${fmt(p.pts*W.v)} đ</span></div>
+      <div class="num-row"><label for="v${p.id}" class="mono">V(G) =</label><input class="txt" id="v${p.id}" type="text" inputmode="numeric" autocomplete="off"></div>
+    </div>
+    <div class="part">
+      <div class="part-h"><span class="tag">b</span>Tập đường độc lập<span class="w">${fmt(p.pts*W.p)} đ</span></div>
+      <label class="hint" for="paths${p.id}">Mỗi dòng một đường, từ nút ${p.entry} đến nút ${p.exit}.</label>
+      <textarea id="paths${p.id}" rows="4" spellcheck="false" placeholder="${p.entry}-…-${p.exit}"></textarea>
+    </div>
+    <div class="part">
+      <div class="part-h"><span class="tag">c</span>Ca kiểm thử<span class="w">${fmt(p.pts*W.t)} đ</span></div>
+      <div class="tblwrap"><table class="tc"><thead><tr><th>#</th>${p.inputs.map(i=>`<th>${i.k} <span class="sub">(${typeHint(i.t)})</span></th>`).join("")}<th>Kết quả mong đợi</th><th></th></tr></thead><tbody id="tb${p.id}"></tbody></table></div>
+      <button type="button" class="add" data-add="${p.id}">+ Thêm ca kiểm thử</button>
+    </div>
+    <div class="fb-slot" id="fb${p.id}"></div>
+  </article>`).join("");
+  document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => { const p=PROBLEMS.find(q=>q.id==b.dataset.add); addRow(p); save(); });
+}
+
+/* ---------- state ---------- */
+let state = {name:"", startAt:null, graded:false};
+function collect(p){
+  return {
+    v: $(`v${p.id}`).value,
+    paths: $(`paths${p.id}`).value,
+    tests: [...$(`tb${p.id}`).rows].map(tr=>{
+      const o={inputs:{},exp:""};
+      tr.querySelectorAll("[data-k]").forEach(el=>{ if(el.dataset.k==="__exp") o.exp=el.value; else o.inputs[el.dataset.k]=el.value; });
+      return o;
+    })
+  };
+}
+function save(){
+  try{ localStorage.setItem(STORE, JSON.stringify({...state, answers:Object.fromEntries(PROBLEMS.map(p=>[p.id,collect(p)]))})); }catch(e){}
+}
+function load(){ try{ return JSON.parse(localStorage.getItem(STORE)||"null"); }catch(e){ return null; } }
+
+function isDone(p){
+  const s = collect(p);
+  return s.v.trim()!=="" && s.paths.trim()!=="" && s.tests.some(t=>t.exp!=="");
+}
+function updateProgress(){
+  const n = PROBLEMS.filter(isDone).length;
+  $("progress").innerHTML = `Đã làm đủ <b>${n}/${PROBLEMS.length}</b> bài`;
+  return n;
+}
+
+/* ---------- timer ---------- */
+let tick = null;
+function remainingMs(){ return state.startAt ? TOTAL_MIN*60000 - (Date.now()-state.startAt) : TOTAL_MIN*60000; }
+function drawTimer(){
+  const ms = Math.max(0, remainingMs()); const s = Math.ceil(ms/1000);
+  const el = $("timer");
+  el.textContent = `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+  el.classList.toggle("low", ms>0 && ms<=5*60000); el.classList.toggle("out", ms<=0);
+  if (state.graded) { el.textContent = "Đã nộp"; el.classList.remove("low","out"); }
+}
+function startTimer(){
+  clearInterval(tick);
+  tick = setInterval(()=>{ drawTimer(); if(!state.graded && remainingMs()<=0){ clearInterval(tick); gradeAll(true); } }, 1000);
+  drawTimer();
+}
+function begin(){
+  $("fs").disabled = false;
+  $("startBox").hidden = true; $("whoBox").hidden = false;
+  const t = new Date(state.startAt);
+  $("who").innerHTML = `Thí sinh: <b>${esc(state.name||"Chưa ghi tên")}</b> · Bắt đầu lúc ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")} · Chỉ được nộp 1 lần; hết giờ hệ thống tự nộp bài.`;
+  startTimer();
+}
+$("startBtn").onclick = () => { state.name = $("sv").value.trim(); state.startAt = Date.now(); state.graded=false; save(); begin(); $("p1").scrollIntoView({block:"start"}); };
+
+/* ---------- grading ---------- */
+// Độc lập tuyến tính của vectơ cạnh (khử Gauss). Kết quả không phụ thuộc thứ tự viết các đường.
+function addToBasis(basis, v){
+  v = v.slice();
+  for (const b of basis){ const c=v[b.piv]; if (Math.abs(c)>1e-9) for(let i=0;i<v.length;i++) v[i]-=c*b.row[i]; }
+  const piv = v.findIndex(x=>Math.abs(x)>1e-9);
+  if (piv<0) return false;
+  const d=v[piv]; const row=v.map(x=>x/d);
+  for (const b of basis){ const c=b.row[piv]; if (Math.abs(c)>1e-9) for(let i=0;i<row.length;i++) b.row[i]-=c*row[i]; }
+  basis.push({piv,row}); return true;
+}
+function gradeProblem(p, st){
+  const edgeSet = new Set(p.edges.map(e=>e.join("-")));
+  // a
+  const vRaw = st.v.trim(), vNum = /^-?\d+$/.test(vRaw) ? Number(vRaw) : null, vOk = vNum===p.V;
+  // b
+  const edgeIdx = Object.fromEntries(p.edges.map((e,i)=>[e.join("-"),i]));
+  const basis = [], accepted = [], pathRes = [];
+  st.paths.split("\n").map(s=>s.trim()).filter(Boolean).forEach(line=>{
+    const nodes = (line.match(/\d+/g)||[]).map(Number); let msg=null;
+    if (nodes.length<2) msg="Đường quá ngắn";
+    else if (nodes[0]!==p.entry) msg=`Phải bắt đầu từ nút ${p.entry}`;
+    else if (nodes.at(-1)!==p.exit) msg=`Phải kết thúc ở nút ${p.exit}`;
+    else for (let j=0;j<nodes.length-1;j++) if(!edgeSet.has(nodes[j]+"-"+nodes[j+1])){ msg=`Không có cạnh ${nodes[j]} → ${nodes[j+1]}`; break; }
+    const key = nodes.join("-");
+    if (!msg){ const d=accepted.findIndex(a=>a.key===key); if(d>=0) msg=`Trùng với đường P${d+1}`; }
+    let vec=null;
+    if (!msg){
+      vec = p.edges.map(()=>0);
+      for(let j=0;j<nodes.length-1;j++) vec[edgeIdx[nodes[j]+"-"+nodes[j+1]]]++;
+      if (!addToBasis(basis, vec)) msg = "Là tổ hợp của các đường khác trong bài, nên không độc lập";
+    }
+    if (!msg && accepted.length>=p.V) msg="Thừa: đã đủ V(G) đường";
+    if (!msg) accepted.push({key});
+    pathRes.push({nodes, msg, label: msg?null:`P${accepted.length}`});
+  });
+  const pRatio = Math.min(accepted.length, p.V)/p.V;
+  // c
+  const rows = st.tests.filter(r=>Object.values(r.inputs).some(v=>String(v).trim()!=="") || r.exp!=="");
+  const tcov = new Set(); let correct=0; const testRes=[];
+  rows.forEach(r=>{
+    const x={}; let err=null;
+    for (const inp of p.inputs){ const v=parseVal(inp, String(r.inputs[inp.k]??"")); if(v===undefined){ err=`Thiếu hoặc sai dữ liệu ở “${inp.k}”${inp.min!==undefined?` (khoảng ${inp.min}..${inp.max})`:""}`; break; } x[inp.k]=v; }
+    if (err){ testRes.push({err}); return; }
+    const {path,out} = p.run(x);
+    for (let j=0;j<path.length-1;j++) tcov.add(path[j]+"-"+path[j+1]);
+    const ok = r.exp!=="" && outEq(p.out, r.exp, out); if(ok) correct++;
+    const m = accepted.findIndex(a=>a.key===path.join("-"));
+    testRes.push({x, path, out, exp:r.exp, ok, match:m});
+  });
+  const covRatio = tcov.size/p.edges.length;
+  const outRatio = rows.length ? correct/Math.max(rows.length, p.V) : 0;
+  const tRatio = rows.length ? 0.5*covRatio + 0.5*outRatio : 0;
+  const missing = p.edges.map(e=>e.join("-")).filter(e=>!tcov.has(e));
+  const sv = p.pts*W.v*(vOk?1:0), sp = p.pts*W.p*pRatio, stt = p.pts*W.t*tRatio;
+  return {vRaw, vOk, pathRes, accepted:accepted.length, pRatio, testRes, rows:rows.length, correct, covRatio, tcovN:tcov.size, missing, sv, sp, st:stt, total:sv+sp+stt};
+}
+const pill = (r, txt) => `<span class="pill ${r>=0.999?"ok":r<=0.001?"no":"mid"}">${txt}</span>`;
+function renderFeedback(p, g){
+  const outShow = v => p.out.t==="num" ? fmt(v) : v;
+  const pathsHtml = g.pathRes.length ? `<ul class="plist">${g.pathRes.map(r=>`<li><span class="mk ${r.msg?"no":"ok"}">${r.msg?"✗":"✓"}</span><span class="mono">${r.label?r.label+": ":""}${esc(dash(r.nodes))||"(trống)"}</span><span class="sub">${r.msg?esc(r.msg):"hợp lệ"}</span></li>`).join("")}</ul>` : `<div class="sub">Chưa ghi đường nào.</div>`;
+  const testsHtml = g.testRes.length ? `<div class="tblwrap"><table class="rs"><thead><tr><th>#</th><th>Đầu vào</th><th>Đường thực tế</th><th>Kết quả thực tế</th><th>Mong đợi</th><th></th></tr></thead><tbody>${g.testRes.map((t,i)=> t.err ? `<tr><td>${i+1}</td><td colspan="4">${esc(t.err)}</td><td class="no">✗</td></tr>` :
+      `<tr><td>${i+1}</td><td class="mono">${p.inputs.map(inp=>`${inp.k}=${esc(showVal(t.x[inp.k]))}`).join(", ")}</td><td class="mono">${dash(t.path)}${t.match>=0?` <span class="sub">(P${t.match+1})</span>`:""}</td><td class="mono">${esc(outShow(t.out))}</td><td class="mono">${esc(t.exp)||"—"}</td><td class="${t.ok?"ok":"no"}">${t.ok?"✓":"✗"}</td></tr>`).join("")}</tbody></table></div>` : `<div class="sub">Chưa có ca kiểm thử nào.</div>`;
+  $(`fb${p.id}`).innerHTML = `<div class="fb">
+    <div class="fb-score">Bài ${p.id}: ${fmt(g.total)} / ${fmt(p.pts)} điểm</div>
+    <div class="fb-part"><h3>a) V(G) ${pill(g.vOk?1:0, g.vOk?"Đúng":"Sai")}</h3><div>Bạn ghi: <span class="mono">${esc(g.vRaw)||"—"}</span></div></div>
+    <div class="fb-part"><h3>b) Đường độc lập ${pill(g.pRatio, `${g.accepted}/${p.V} hợp lệ`)}</h3>${pathsHtml}</div>
+    <div class="fb-part"><h3>c) Ca kiểm thử ${pill(g.covRatio, `phủ cạnh ${g.tcovN}/${p.edges.length}`)} ${pill(g.rows?g.correct/Math.max(g.rows,p.V):0, `kết quả đúng ${g.correct}/${Math.max(g.rows,p.V)}`)}</h3>
+      ${testsHtml}
+      ${g.rows && g.rows<p.V?`<div class="sub">Cần ít nhất ${p.V} ca; mỗi ca còn thiếu được tính là sai.</div>`:""}
+    </div>
+  </div>`;
+}
+function gradeAll(auto){
+  const results = PROBLEMS.map(p=>{ const g=gradeProblem(p, collect(p)); renderFeedback(p,g); return {p,g}; });
+  const total = results.reduce((s,r)=>s+r.g.total,0);
+  const rank = total>=8.5?["Giỏi","ok"]:total>=7?["Khá","mid"]:total>=5?["Trung bình","mid"]:["Chưa đạt","no"];
+  const used = state.startAt ? Math.min(TOTAL_MIN*60, Math.round((Date.now()-state.startAt)/1000)) : 0;
+  $("result").innerHTML = `
+    <div class="eyebrow">Kết quả · ${esc(state.name||"Thí sinh")}${auto?" · tự nộp khi hết giờ":""}</div>
+    <div class="score"><span class="big">${fmt(total)}</span><span class="of">/ 10 điểm</span><span class="pill ${rank[1]} rank">${rank[0]}</span></div>
+    <div class="sub">Thời gian làm bài: ${Math.floor(used/60)} phút ${used%60} giây. Bài đã nộp, không thể làm lại. Nhận xét chi tiết ở cuối mỗi bài.</div>
+    <div class="tblwrap"><table class="sum"><thead><tr><th>Bài</th><th>a) V(G)</th><th>b) Đường</th><th>c) Ca KT</th><th>Tổng</th></tr></thead><tbody>
+      ${results.map(({p,g})=>`<tr><td><a href="#p${p.id}">Bài ${p.id}</a> · ${p.title}</td><td>${fmt(g.sv)}</td><td>${fmt(g.sp)}</td><td>${fmt(g.st)}</td><td>${fmt(g.total)} / ${fmt(p.pts)}</td></tr>`).join("")}
+      <tr><td>Tổng</td><td></td><td></td><td></td><td>${fmt(total)} / 10</td></tr></tbody></table></div>`;
+  $("result").hidden = false;
+  state.graded = true; save();
+  $("fs").disabled = true;
+  document.querySelectorAll(".q").forEach(q=>q.classList.add("graded"));
+  $("submitBtn").disabled = true; $("submitTop").disabled = true; $("warn").hidden = true;
+  clearInterval(tick); drawTimer();
+  $("result").scrollIntoView({block:"start"});
+}
+
+let confirmPending = false;
+function trySubmit(){
+  if (state.graded) return;
+  if (!state.startAt){ $("warn").textContent = "Bấm “Bắt đầu làm bài” trước."; $("warn").hidden=false; $("startBtn").focus(); return; }
+  const n = updateProgress();
+  if (n < PROBLEMS.length && !confirmPending){
+    $("warn").textContent = `Còn ${PROBLEMS.length-n} bài chưa làm đủ 3 phần. Mỗi người chỉ được nộp 1 lần. Bấm nộp lần nữa để vẫn nộp.`;
+    $("warn").hidden = false; confirmPending = true; $("warn").scrollIntoView({block:"center"}); return;
+  }
+  gradeAll(false);
+}
+$("exam").addEventListener("submit", e => { e.preventDefault(); trySubmit(); });
+$("submitTop").onclick = trySubmit;
+$("exam").addEventListener("input", () => { confirmPending=false; $("warn").hidden=true; updateProgress(); save(); });
+$("exam").addEventListener("change", () => { updateProgress(); save(); });
+
+/* ---------- init ---------- */
+function init(saved){
+  renderProblems();
+  PROBLEMS.forEach(p=>{
+    const a = saved?.answers?.[p.id];
+    if (a){ $(`v${p.id}`).value=a.v||""; $(`paths${p.id}`).value=a.paths||""; (a.tests?.length?a.tests:[null,null,null]).forEach(t=>addRow(p,t)); }
+    else for (let i=0;i<3;i++) addRow(p);
+  });
+  updateProgress();
+}
+// Giáo viên mở link có đuôi #reset để xoá bài đã nộp trên máy đó.
+if (location.hash === "#reset"){ try{ localStorage.removeItem(STORE); }catch(e){} history.replaceState(null,"",location.pathname+location.search); }
+const saved = load();
+init(saved);
+if (saved?.startAt){
+  state = {name:saved.name||"", startAt:saved.startAt, graded:!!saved.graded};
+  $("sv").value = state.name;
+  begin();
+  if (state.graded || remainingMs()<=0) gradeAll(!state.graded);
+} else drawTimer();
+</script>
+
+</body></html>
